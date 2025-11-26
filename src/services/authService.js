@@ -20,7 +20,7 @@ exports.registerUser = async (username, email, password) => {
   const user = new User({ username, email, password: hashed });
   await user.save();
 
-  return { message: "User created successfully" };
+  return { message: "User created successfully"};
 };
 
 exports.loginUser = async (email, password) => {
