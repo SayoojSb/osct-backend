@@ -22,8 +22,8 @@ app.get("/", (req, res) => {
   res.send("API running...");
 });
 
+app.use("/api/auth", authRoutes);
 app.use("/api/contributions", contributionRoutes)
 
-app.use("/api/auth", authRoutes);
 
 module.exports = app;
