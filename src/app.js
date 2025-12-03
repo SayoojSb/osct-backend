@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 
 const authRoutes = require("./routes/authRoutes");
+const contributionRoutes = require('./routes/contributionRoutes')
 
 const app = express();
 
@@ -20,6 +21,8 @@ app.use(
 app.get("/", (req, res) => {
   res.send("API running...");
 });
+
+app.use("/api/contributions", contributionRoutes)
 
 app.use("/api/auth", authRoutes);
 
