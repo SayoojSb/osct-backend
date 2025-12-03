@@ -138,3 +138,13 @@ const getSingleContribution = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
+
+module.exports = {
+    createContribution,
+    getAllContributions,
+    updateStatus,
+    updateContribution,
+    deleteContribution,
+    getSingleContribution
+  };
+  
