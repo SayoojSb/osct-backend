@@ -73,6 +73,8 @@ router.get('/github/callback', async(req,res)=>{
             public_repos: githubUser.public_repos,
           });
 
+        console.log("REDIRECTING TO:", process.env.HOST_URL);
+
         // redirecting to frontend
         res.redirect(
             `${process.env.HOST_URL}/auth/success?token=${token}`
