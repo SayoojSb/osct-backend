@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const session = require("express-session");
 
 const authRoutes = require("./routes/authRoutes");
 const contributionRoutes = require('./routes/contributionRoutes')
@@ -16,6 +17,18 @@ app.use(
       "https://open-source-contribution-tracker.netlify.app"
     ],
     credentials: true,
+  })
+);
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "osct_secret_key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 5, // 5 minutes
+    },
   })
 );
 
