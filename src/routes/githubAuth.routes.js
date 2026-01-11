@@ -123,7 +123,7 @@ router.get('/github/callback', async (req, res) => {
 
     // redirecting to frontend
     res.redirect(
-      `${process.env.HOST_URL}/auth/success?token=${token}`
+      `${process.env.HOST_URL}`
     );
 
 
