@@ -19,6 +19,11 @@ router.get('/github/callback', async(req,res)=>{
         if (!code) {
             return res.status(400).send("No code received");
           }
+      
+          // IMPORTANT: stop accidental reuse
+          if (req.session?.githubUsed) {
+            return res.status(400).send("OAuth already processed");
+          }
         const params = new URLSearchParams({
             client_id : process.env.GITHUB_CLIENT_ID,
             client_secret : process.env.GITHUB_CLIENT_SECRET,
@@ -31,6 +36,7 @@ router.get('/github/callback', async(req,res)=>{
                 method : "POST",
                 headers : {
                     Accept : "application/json",
+                    "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body : params
             }
