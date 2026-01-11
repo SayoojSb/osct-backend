@@ -8,6 +8,9 @@ const githubAuthRoutes = require('./routes/githubAuth.routes')
 
 const app = express();
 
+// Trust proxy is required for secure cookies on platforms like Render/Heroku
+app.set("trust proxy", 1);
+
 app.use(express.json());
 
 app.use(
