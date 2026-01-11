@@ -14,7 +14,8 @@ router.get("/github", (req, res) => {
 
 router.get('/github/callback', async(req,res)=>{
     try{
-        const {code} = req.query;
+        const {code} = req?.query;
+        console.log(req.query)
         if (!code) {
             return res.status(400).send("No code received");
           }
