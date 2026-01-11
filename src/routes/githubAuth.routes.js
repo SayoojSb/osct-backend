@@ -30,6 +30,8 @@ router.get('/github/callback', async(req,res)=>{
             code
         })
 
+        console.log(params)
+
         const tokenRes = await fetch(
             "https://github.com/login/oauth/access_token",
             {
@@ -42,7 +44,11 @@ router.get('/github/callback', async(req,res)=>{
             }
         )
 
+        console.log(tokenRes)
+
         const tokenData = await tokenRes.json()
+
+        console.log(tokenData)
 
         // console.log("STEP 5 token response:", tokenData);
 
