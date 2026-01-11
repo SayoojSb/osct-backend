@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 
 const authRoutes = require("./routes/authRoutes");
 const contributionRoutes = require('./routes/contributionRoutes')
@@ -28,6 +29,9 @@ app.use(
     secret: process.env.SESSION_SECRET || "osct_secret_key",
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URL, // Ensure this env var fits your setup
+    }),
     cookie: {
       secure: process.env.NODE_ENV === "production",
       httpOnly: true,
