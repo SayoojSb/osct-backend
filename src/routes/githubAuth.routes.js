@@ -27,7 +27,7 @@ router.get('/github/callback', async (req, res) => {
     const { code } = req?.query;
 
     if (!code) {
-      return res.status(400).send("No code received");
+      return res.redirect(`${process.env.HOST_URL}/login?error=no_code`);
     }
 
     console.log("Callback Session ID:", req.sessionID);
@@ -35,8 +35,8 @@ router.get('/github/callback', async (req, res) => {
 
     if (!req.session.githubAuthInProgress) {
       console.warn("GitHub OAuth: State mismatch or double request blocked. Session data:", req.session);
-      // Return 400 with detailed error for debugging (remove detail in prod eventually)
-      return res.status(400).json({ error: "Session expired or invalid state. Please try again." });
+      // Redirect to login instead of showing JSON error
+      return res.redirect(`${process.env.HOST_URL}/login?error=double_request`);
     }
 
     // Clear session immediately to prevent reuse
@@ -73,7 +73,7 @@ router.get('/github/callback', async (req, res) => {
 
     if (!tokenData.access_token) {
       console.error("No access token:", tokenData);
-      return res.status(400).json(tokenData);
+      return res.redirect(`${process.env.HOST_URL}/login?error=bad_verification`);
     }
 
     const accessToken = tokenData.access_token;
@@ -114,7 +114,7 @@ router.get('/github/callback', async (req, res) => {
   }
   catch (err) {
     console.error("GitHub OAuth error:", err);
-    res.status(500).send("GitHub OAuth failed");
+    res.redirect(`${process.env.HOST_URL}/login?error=server_error`);
   }
 })
 
