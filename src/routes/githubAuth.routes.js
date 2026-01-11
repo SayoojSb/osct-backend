@@ -2,45 +2,61 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const router = express.Router()
 
+const crypto = require('crypto');
+
 router.get("/github", (req, res) => {
-  req.session.githubAuthInProgress = true;
-  console.log("Initialize Session:", req.sessionID);
+  const state = crypto.randomBytes(16).toString('hex');
 
-  req.session.save((err) => {
-    if (err) {
-      console.error("Session save error:", err);
-      return res.status(500).send("Session error");
-    }
-
-    const redirectUrl =
-      "https://github.com/login/oauth/authorize" +
-      `?client_id=${process.env.GITHUB_CLIENT_ID}` +
-      `&scope=read:user`;
-
-    res.redirect(redirectUrl);
+  // Store state in a signed cookie (httpOnly, secure)
+  res.cookie('oauth_state', state, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    signed: true,
+    maxAge: 1000 * 60 * 5, // 5 mins
+    sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
   });
+
+  const redirectUrl =
+    "https://github.com/login/oauth/authorize" +
+    `?client_id=${process.env.GITHUB_CLIENT_ID}` +
+    `&state=${state}` +
+    `&scope=read:user`;
+
+  res.redirect(redirectUrl);
 });
 
 
 router.get('/github/callback', async (req, res) => {
   try {
-    const { code } = req?.query;
+    const { code, state } = req?.query;
+    const cookieState = req.signedCookies?.oauth_state;
 
     if (!code) {
       return res.redirect(`${process.env.HOST_URL}/login?error=no_code`);
     }
 
-    console.log("Callback Session ID:", req.sessionID);
-    console.log("Callback Session Data:", req.session);
-
-    if (!req.session.githubAuthInProgress) {
-      console.warn("GitHub OAuth: State mismatch or double request blocked. Session data:", req.session);
-      // Redirect to login instead of showing JSON error
-      return res.redirect(`${process.env.HOST_URL}/login?error=double_request`);
+    // Verify state matches (CSRF protection + Double Request protection)
+    if (!state || !cookieState || state !== cookieState) {
+      console.warn("GitHub OAuth: State mismatch. Possible CSRF or double request.");
+      // Clear cookie just in case
+      res.clearCookie('oauth_state');
+      return res.redirect(`${process.env.HOST_URL}/login?error=invalid_state`);
     }
 
-    // Clear session immediately to prevent reuse
-    delete req.session.githubAuthInProgress;
+    // Clear state cookie immediately to prevent reuse
+    res.clearCookie('oauth_state', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
+    });
+
+    // Clear state cookie immediately to prevent reuse
+    res.clearCookie('oauth_state', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
+    });
+
     const params = new URLSearchParams({
       client_id: process.env.GITHUB_CLIENT_ID,
       client_secret: process.env.GITHUB_CLIENT_SECRET,

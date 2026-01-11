@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const session = require("express-session");
-const MongoStore = require("connect-mongo");
+
 
 const authRoutes = require("./routes/authRoutes");
 const contributionRoutes = require('./routes/contributionRoutes')
@@ -24,22 +23,9 @@ app.use(
   })
 );
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "osct_secret_key",
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGO_URL, // Ensure this env var fits your setup
-    }),
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax',
-      maxAge: 1000 * 60 * 5, // 5 minutes
-    },
-  })
-);
+const cookieParser = require("cookie-parser");
+
+app.use(cookieParser(process.env.SESSION_SECRET || "osct_secret_key"));
 
 app.get("/", (req, res) => {
   res.send("API running...");
