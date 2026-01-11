@@ -119,12 +119,17 @@ router.get('/github/callback', async (req, res) => {
       public_repos: githubUser.public_repos,
     });
 
-    console.log("REDIRECTING TO:", process.env.HOST_URL);
+    const hostUrl = (process.env.HOST_URL || "").trim();
+    if (!hostUrl) {
+      console.error("HOST_URL is not defined.");
+      return res.status(500).send("Configuration error: HOST_URL missing");
+    }
+
+    const finalRedirectUrl = `${hostUrl}/auth/success?token=${token}`;
+    console.log("REDIRECTING TO FINAL:", finalRedirectUrl);
 
     // redirecting to frontend
-    res.redirect(
-      `${process.env.HOST_URL}`
-    );
+    return res.redirect(finalRedirectUrl);
 
 
   }
