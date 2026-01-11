@@ -4,12 +4,21 @@ const router = express.Router()
 
 router.get("/github", (req, res) => {
   req.session.githubAuthInProgress = true;
-  const redirectUrl =
-    "https://github.com/login/oauth/authorize" +
-    `?client_id=${process.env.GITHUB_CLIENT_ID}` +
-    `&scope=read:user`;
+  console.log("Initialize Session:", req.sessionID);
 
-  res.redirect(redirectUrl);
+  req.session.save((err) => {
+    if (err) {
+      console.error("Session save error:", err);
+      return res.status(500).send("Session error");
+    }
+
+    const redirectUrl =
+      "https://github.com/login/oauth/authorize" +
+      `?client_id=${process.env.GITHUB_CLIENT_ID}` +
+      `&scope=read:user`;
+
+    res.redirect(redirectUrl);
+  });
 });
 
 
@@ -21,10 +30,12 @@ router.get('/github/callback', async (req, res) => {
       return res.status(400).send("No code received");
     }
 
+    console.log("Callback Session ID:", req.sessionID);
+    console.log("Callback Session Data:", req.session);
+
     if (!req.session.githubAuthInProgress) {
-      console.warn("GitHub OAuth: State mismatch or double request blocked.");
-      // Return 200/OK if it's a double request to avoid errors in client if they retry? 
-      // Or 400. 400 is safer.
+      console.warn("GitHub OAuth: State mismatch or double request blocked. Session data:", req.session);
+      // Return 400 with detailed error for debugging (remove detail in prod eventually)
       return res.status(400).json({ error: "Session expired or invalid state. Please try again." });
     }
 
