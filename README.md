@@ -13,7 +13,7 @@ Frontend Repository:
 https://github.com/SayoojSb/osct-frontend
 
 Live Frontend (Netlify):
-👉 https://your-frontend-link.netlify.app
+👉 https://open-source-contribution-tracker.netlify.app
 
 📌 Features (Backend)
 🔐 Authentication (JWT)

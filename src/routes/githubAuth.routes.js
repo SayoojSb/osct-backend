@@ -1,6 +1,7 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const router = express.Router()
+const User = require("../models/User");
 
 const crypto = require('crypto');
 
@@ -103,14 +104,21 @@ router.get('/github/callback', async (req, res) => {
 
     const githubUser = await userRes.json();
 
-    const token = jwt.sign(
-      {
+    let user = await User.findOne({ githubId: githubUser.id });
+
+    if (!user) {
+      user = await User.create({
         githubId: githubUser.id,
-        username: githubUser.login
-      },
+        username: githubUser.login,
+      });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    )
+      { expiresIn: "7d" }
+    );
+    
 
     console.log("STEP 6 GitHub user:", {
       id: githubUser.id,
