@@ -1,20 +1,37 @@
-const express = require('express')
-const jwt = require('jsonwebtoken')
-const router = express.Router()
+const express = require("express");
+const jwt = require("jsonwebtoken");
+const router = express.Router();
 const User = require("../models/User");
+const crypto = require("crypto");
 
-const crypto = require('crypto');
-
+/**
+ * STEP 1: Redirect user to GitHub OAuth
+ * - Generate state (CSRF protection)
+ * - Store state in signed cookie
+ * - Optionally store redirect_uri (frontend origin)
+ */
 router.get("/github", (req, res) => {
-  const state = crypto.randomBytes(16).toString('hex');
+  const state = crypto.randomBytes(16).toString("hex");
+  const redirectUri = req.query.redirect_uri;
 
-  // Store state in a signed cookie (httpOnly, secure)
-  res.cookie('oauth_state', state, {
+  // Store frontend origin (if provided)
+  if (redirectUri) {
+    res.cookie("oauth_redirect", redirectUri, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      signed: true,
+      maxAge: 1000 * 60 * 5, // 5 minutes
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
+  }
+
+  // ALWAYS store OAuth state
+  res.cookie("oauth_state", state, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     signed: true,
-    maxAge: 1000 * 60 * 5, // 5 mins
-    sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
+    maxAge: 1000 * 60 * 5, // 5 minutes
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   });
 
   const redirectUrl =
@@ -23,48 +40,48 @@ router.get("/github", (req, res) => {
     `&state=${state}` +
     `&scope=read:user`;
 
-  res.redirect(redirectUrl);
+  return res.redirect(redirectUrl);
 });
 
-
-router.get('/github/callback', async (req, res) => {
+/**
+ * STEP 2: GitHub OAuth callback
+ * - Verify state
+ * - Exchange code for access token
+ * - Fetch GitHub user
+ * - Create / find user
+ * - Issue JWT
+ * - Redirect back to correct frontend
+ */
+router.get("/github/callback", async (req, res) => {
   try {
-    const { code, state } = req?.query;
+    const { code, state } = req.query;
     const cookieState = req.signedCookies?.oauth_state;
+    const redirectFromCookie = req.signedCookies?.oauth_redirect;
 
     if (!code) {
       return res.redirect(`${process.env.HOST_URL}/login?error=no_code`);
     }
 
-    // Verify state matches (CSRF protection + Double Request protection)
+    // CSRF protection
     if (!state || !cookieState || state !== cookieState) {
-      console.warn("GitHub OAuth: State mismatch. Possible CSRF or double request.");
-      // Clear cookie just in case
-      res.clearCookie('oauth_state');
+      console.warn("GitHub OAuth: State mismatch.");
+      res.clearCookie("oauth_state");
       return res.redirect(`${process.env.HOST_URL}/login?error=invalid_state`);
     }
 
-    // Clear state cookie immediately to prevent reuse
-    res.clearCookie('oauth_state', {
+    // Clear state cookie after verification
+    res.clearCookie("oauth_state", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
 
-    // Clear state cookie immediately to prevent reuse
-    res.clearCookie('oauth_state', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
-    });
-
+    // Exchange code for access token
     const params = new URLSearchParams({
       client_id: process.env.GITHUB_CLIENT_ID,
       client_secret: process.env.GITHUB_CLIENT_SECRET,
-      code
-    })
-
-    console.log(params)
+      code,
+    });
 
     const tokenRes = await fetch(
       "https://github.com/login/oauth/access_token",
@@ -74,19 +91,11 @@ router.get('/github/callback', async (req, res) => {
           Accept: "application/json",
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: params
+        body: params,
       }
-    )
+    );
 
-    console.log(tokenRes)
-
-    const tokenData = await tokenRes.json()
-
-    console.log(tokenData)
-
-    // console.log("STEP 5 token response:", tokenData);
-
-    // res.send("Step 5 works — check server logs");
+    const tokenData = await tokenRes.json();
 
     if (!tokenData.access_token) {
       console.error("No access token:", tokenData);
@@ -95,7 +104,7 @@ router.get('/github/callback', async (req, res) => {
 
     const accessToken = tokenData.access_token;
 
-    // fetching github user
+    // Fetch GitHub user
     const userRes = await fetch("https://api.github.com/user", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -113,38 +122,39 @@ router.get('/github/callback', async (req, res) => {
       });
     }
 
+    // Issue JWT
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
-    
 
-    console.log("STEP 6 GitHub user:", {
-      id: githubUser.id,
-      login: githubUser.login,
-      name: githubUser.name,
-      public_repos: githubUser.public_repos,
-    });
+    // Decide redirect target
+    const baseRedirectUrl =
+      redirectFromCookie || (process.env.HOST_URL || "").trim();
 
-    const hostUrl = (process.env.HOST_URL || "").trim();
-    if (!hostUrl) {
-      console.error("HOST_URL is not defined.");
-      return res.status(500).send("Configuration error: HOST_URL missing");
+    if (!baseRedirectUrl) {
+      console.error("No redirect URL available.");
+      return res
+        .status(500)
+        .send("Configuration error: redirect URL missing");
     }
 
-    const finalRedirectUrl = `${hostUrl}/auth/success?token=${token}`;
+    // Clear redirect cookie after use
+    res.clearCookie("oauth_redirect", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
+
+    const finalRedirectUrl = `${baseRedirectUrl}/auth/success?token=${token}`;
     console.log("REDIRECTING TO FINAL:", finalRedirectUrl);
 
-    // redirecting to frontend
     return res.redirect(finalRedirectUrl);
-
-
-  }
-  catch (err) {
+  } catch (err) {
     console.error("GitHub OAuth error:", err);
-    res.redirect(`${process.env.HOST_URL}/login?error=server_error`);
+    return res.redirect(`${process.env.HOST_URL}/login?error=server_error`);
   }
-})
+});
 
-module.exports = router
+module.exports = router;

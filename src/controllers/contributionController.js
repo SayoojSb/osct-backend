@@ -4,7 +4,6 @@ const createContribution = async (req, res) => {
   try {
     const { title, repoName, description, prLink, status, difficulty } = req.body;
 
-    // ✅ FIXED
     const userId = req.user.userId;
 
     if (!title || !repoName || !description || !prLink || !status || !difficulty) {
@@ -39,7 +38,6 @@ const getAllContributions = async (req, res) => {
   try {
     const { page, limit, search, status, difficulty, sort } = req.query;
 
-    // ✅ FIXED
     const userId = req.user.userId;
 
     const result = await contributionService.getAll(
@@ -72,7 +70,6 @@ const updateStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    // ✅ FIXED
     const userId = req.user.userId;
 
     if (!status) {
@@ -100,7 +97,6 @@ const updateContribution = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    // ✅ FIXED
     const userId = req.user.userId;
 
     if (!updateData || Object.keys(updateData).length === 0) {
@@ -127,7 +123,6 @@ const deleteContribution = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // ✅ FIXED
     const userId = req.user.userId;
 
     const result = await contributionService.deleteContribution(id, userId);
@@ -147,7 +142,6 @@ const getSingleContribution = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // ✅ FIXED
     const userId = req.user.userId;
 
     const result = await contributionService.getSingle(id, userId);
