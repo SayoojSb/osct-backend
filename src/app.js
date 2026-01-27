@@ -5,6 +5,8 @@ const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const contributionRoutes = require('./routes/contributionRoutes')
 const githubAuthRoutes = require('./routes/githubAuth.routes')
+// for github repo exploration : 
+const githubRoutes = require("./routes/github.routes")
 
 const app = express();
 
@@ -34,5 +36,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/contributions", contributionRoutes)
 app.use('/api/auth', githubAuthRoutes)
+// for github repo exploration : 
+app.use("/api/github", githubRoutes)
 
 module.exports = app;

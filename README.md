@@ -137,6 +137,44 @@ Body:
 
 DELETE /api/contributions/:id
 
+7️⃣ GitHub Repository Search
+
+GET /api/github/repos
+
+Query Params:
+q (search query), language, minStars, sort, order, page, perPage
+
+Example:
+/api/github/repos?q=react&language=javascript&sort=stars
+
+🧠 Backend Flow & Logic (Human-Readable)
+
+Ever wondered what happens when you click "Explore Repos" on the frontend? Here is the journey of that request through our backend!
+
+1.  **The Request Arrives** 📨
+    *   The frontend sends a request to `/api/github/repos` with filters like `language=python`.
+
+2.  **Controller Steps In** 👮‍♂️
+    *   The `github.controller.js` catches this request.
+    *   It grabs your query parameters (like `q`, `sort`, `page`).
+    *   **Sanitization Check:** It cleverly trims whitespace and newlines from the search query to prevent "Bad Request" errors from GitHub.
+
+3.  **Authentication & Security** 🔐
+    *   The backend pulls the `GITHUB_TOKEN` from environment variables.
+    *   It properly formats the header as `Authorization: token <my-secret-token>`.
+    *   *Why?* This increases our rate limit from 10 to 5,000 requests per hour!
+
+4.  **Calling the GitHub Giant** 📡
+    *   Using `axios`, we ring up the official GitHub API (`https://api.github.com/search/repositories`).
+    *   We pass along the clean query and headers.
+
+5.  **The Response** 📦
+    *   GitHub replies with a list of repositories.
+    *   We simplify this data (keeping only name, stars, description, url, etc.) before sending it back to you.
+    *   If GitHub says "404" or "403", we handle it gracefully and tell the frontend exactly what went wrong.
+
+Start scrolling and contributing! 🚀
+
 📄 Project Proposal (Required for Evaluation)
 Project Title:
 ⭐ Open Source Contribution Tracker (OSCT)
