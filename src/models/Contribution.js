@@ -37,9 +37,14 @@ const contributionSchema = new mongoose.Schema(
 );
 
 // 🚫 Prevent duplicate GitHub PR imports per user
+// Only enforce uniqueness when githubPrId is NOT null
 contributionSchema.index(
   { createdBy: 1, githubPrId: 1 },
-  { unique: true, sparse: true }
+  { 
+    unique: true, 
+    sparse: true,
+    partialFilterExpression: { githubPrId: { $ne: null } }
+  }
 );
 
 module.exports = mongoose.model("Contribution", contributionSchema);

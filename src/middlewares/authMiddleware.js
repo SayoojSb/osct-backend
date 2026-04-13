@@ -13,7 +13,8 @@ const authMiddleware = (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = decoded; // { id: ... }
+    // Map 'id' from token to 'userId' for consistency
+    req.user = { userId: decoded.id };
 
     next();
 
