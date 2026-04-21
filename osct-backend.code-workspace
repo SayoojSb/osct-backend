@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "osct-frontend",
+			"path": "../osct-frontend"
+		}
+	],
+	"settings": {}
+}

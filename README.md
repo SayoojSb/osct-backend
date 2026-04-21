@@ -290,6 +290,43 @@ Visual analytics dashboard
 
 Contribution streaks calendar
 
+## 🛠️ Tech Stack
+
+### Backend
+- Node.js
+- Express 5.1.0
+- MongoDB 7.0.0
+- Mongoose 8.20.0
+- JWT (jsonwebtoken 9.0.2)
+- Bcrypt 6.0.0
+- Axios 1.13.3
+- CORS 2.8.5
+- Express Session 1.18.2
+- Connect Mongo 6.0.0
+- Cookie Parser 1.4.7
+- Dotenv 17.2.3
+- Nodemon 3.1.11
+
+### Frontend
+- React 19.2.0
+- React Router DOM 7.9.6
+- Vite 7.2.2
+- Axios 1.13.2
+- Tailwind CSS 4.1.17
+- PostCSS 8.5.6
+- Autoprefixer 10.4.22
+- ESLint 9.39.1
+
+### Deployment
+- Render (Backend)
+- Netlify (Frontend)
+
+### Database
+- MongoDB Atlas
+
+### Version Control
+- Git
+
 🧪 How to Run Locally
 1. Clone repo
 git clone <repo-url>
