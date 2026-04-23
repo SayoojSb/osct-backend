@@ -19,14 +19,18 @@ exports.signup = async (req, res) => {
 
     res.status(201).json({ message: result.message });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Server error" });
+    console.error("Signup error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password required" });
+    }
 
     const result = await authService.loginUser(email, password);
 
@@ -45,7 +49,7 @@ exports.login = async (req, res) => {
       },
     });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Server error" });
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
