@@ -59,14 +59,14 @@ router.get("/github/callback", async (req, res) => {
     const redirectFromCookie = req.signedCookies?.oauth_redirect;
 
     if (!code) {
-      return res.redirect(`${process.env.HOST_URL}/login?error=no_code`);
+      return res.redirect(`${process.env.FRONTEND_URL}/login?error=no_code`);
     }
 
     // CSRF protection
     if (!state || !cookieState || state !== cookieState) {
       console.warn("GitHub OAuth: State mismatch.");
       res.clearCookie("oauth_state");
-      return res.redirect(`${process.env.HOST_URL}/login?error=invalid_state`);
+      return res.redirect(`${process.env.FRONTEND_URL}/login?error=invalid_state`);
     }
 
     // Clear state cookie after verification
@@ -99,7 +99,7 @@ router.get("/github/callback", async (req, res) => {
 
     if (!tokenData.access_token) {
       console.error("No access token:", tokenData);
-      return res.redirect(`${process.env.HOST_URL}/login?error=bad_verification`);
+      return res.redirect(`${process.env.FRONTEND_URL}/login?error=bad_verification`);
     }
 
     const accessToken = tokenData.access_token;
@@ -131,7 +131,7 @@ router.get("/github/callback", async (req, res) => {
 
     // Decide redirect target
     const baseRedirectUrl =
-      redirectFromCookie || (process.env.HOST_URL || "").trim();
+      redirectFromCookie || (process.env.FRONTEND_URL || "").trim();
 
     if (!baseRedirectUrl) {
       console.error("No redirect URL available.");
@@ -153,7 +153,7 @@ router.get("/github/callback", async (req, res) => {
     return res.redirect(finalRedirectUrl);
   } catch (err) {
     console.error("GitHub OAuth error:", err);
-    return res.redirect(`${process.env.HOST_URL}/login?error=server_error`);
+    return res.redirect(`${process.env.FRONTEND_URL}/login?error=server_error`);
   }
 });
 
