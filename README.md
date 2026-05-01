@@ -1,361 +1,531 @@
-# osct-backend
+# 🚀 OSCT Backend
 
-🛠️ Open Source Contribution Tracker – Backend (OSCT Backend)
+> RESTful API server for Open Source Contribution Tracker - Built with Node.js, Express, and MongoDB
 
-A secure, production-ready Node.js + Express + MongoDB backend that powers the OSCT platform — a tool to help developers track their open-source contributions with full CRUD, authentication, pagination, filtering, sorting, and search.
+[![Node.js](https://img.shields.io/badge/Node.js-Express-339933?logo=node.js)](https://nodejs.org)
+[![MongoDB](https://img.shields.io/badge/MongoDB-7.0.0-13AA52?logo=mongodb)](https://www.mongodb.com)
+[![JWT](https://img.shields.io/badge/Auth-JWT-000000?logo=json-web-tokens)](https://jwt.io)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![Render](https://img.shields.io/badge/Deployed-Render-46E3B7?logo=render)](https://osct-backend-1.onrender.com)
 
-🚀 Live Backend URL
-https://osct-backend-1.onrender.com
+---
 
-🌐 Frontend Repo & Live Link
+## 📋 Table of Contents
 
-Frontend Repository:
-https://github.com/SayoojSb/osct-frontend
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Environment Variables](#environment-variables)
+- [API Endpoints](#api-endpoints)
+- [Project Structure](#project-structure)
+- [Authentication](#authentication)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
 
-Live Frontend (Netlify):
-👉 https://open-source-contribution-tracker.netlify.app
+---
 
-📌 Features (Backend)
-🔐 Authentication (JWT)
+## 🎯 Overview
 
-Signup
+**OSCT Backend** is the core API server that powers the Open Source Contribution Tracker application. It handles:
 
-Login
+✅ User authentication (JWT & GitHub OAuth)  
+✅ Contribution CRUD operations  
+✅ Advanced search, filtering, and sorting  
+✅ GitHub API integration  
+✅ Data persistence with MongoDB  
+✅ Secure token management  
 
-Protected routes
+**Frontend Repository:** [osct-frontend](https://github.com/SayoojSb/osct-frontend)
 
-Token-based access
+---
 
-🧩 Contribution CRUD
-Feature	Status
-Create Contribution	✅
-Read All + Pagination	✅
-Read Single	✅
-Update Full Contribution	✅
-Update Only Status	✅
-Delete Contribution	✅
-🔎 Advanced Backend Features
-Functionality	Status
-Pagination	✅
-Search (title/repo)	✅
-Filtering (status/difficulty)	✅
-Sorting (latest, oldest, title A–Z, Z–A)	✅
-Ownership Validation	Only creator can update/delete
-🗂️ Folder Structure
-src/
- ├── app.js
- ├── server.js
- ├── config/
- │     └── db.js
- ├── controllers/
- │     └── contributionController.js
- ├── services/
- │     └── contributionService.js
- ├── middlewares/
- │     └── authMiddleware.js
- ├── models/
- │     └── User.js
- │     └── Contribution.js
- ├── routes/
-       ├── authRoutes.js
-       └── contributionRoutes.js
+## ✨ Features
 
-🔧 Environment Variables (.env)
+### 🔐 Authentication
+- **Email & Password Authentication** with JWT tokens
+- **GitHub OAuth Integration** for seamless sign-up
+- **Secure Password Hashing** with bcrypt
+- **Token-based Session Management**
+- **CORS Protection** for cross-origin requests
 
-Create a .env file:
+### 📊 Contribution Management
+- **Create** new contributions with full details
+- **Read** all contributions with pagination
+- **Update** contribution information
+- **Update** PR status independently
+- **Delete** contributions with ownership verification
+- **Ownership Security** - Only creators can modify their contributions
 
-MONGO_URL=your_mongo_connection_string
-JWT_SECRET=your_secret
+### 🔎 Advanced Features
+- **Search** by title and repository name
+- **Filter** by PR status (open, closed, merged)
+- **Filter** by difficulty level (easy, medium, hard)
+- **Sort** by date (latest/oldest) or alphabetically
+- **Pagination** for efficient data loading
+- **GitHub API Integration** for repository data
+
+### 🌐 GitHub Integration
+- Fetch organization repositories
+- Retrieve PR information
+- Real-time status updates
+- Direct GitHub API communication
+
+---
+
+## 🛠️ Tech Stack
+
+```
+Runtime:        Node.js
+Framework:      Express 5.1.0
+Database:       MongoDB 7.0.0
+ODM:            Mongoose 8.20.0
+Authentication: JWT (jsonwebtoken 9.0.2)
+Password Hash:  Bcrypt 6.0.0
+HTTP Client:    Axios 1.13.3
+CORS:           CORS 2.8.5
+Environment:    Dotenv 17.2.3
+Dev Tools:      Nodemon 3.1.11
+```
+
+---
+
+## 📦 Installation
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+- MongoDB Atlas account
+- GitHub OAuth credentials (optional)
+
+### Clone & Setup
+
+```bash
+# Clone repository
+git clone https://github.com/SayoojSb/osct-backend.git
+cd osct-backend
+
+# Install dependencies
+npm install
+
+# Create .env file
+cp .env.example .env
+
+# Start development server
+npm run dev
+
+# Start production server
+npm start
+```
+
+---
+
+## 🔑 Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+# Database
+MONGO_URL=mongodb+srv://username:password@cluster.mongodb.net/osct
+
+# Authentication
+JWT_SECRET=your_super_secret_jwt_key_here_min_32_chars
+SESSION_SECRET=your_session_secret_key_here
+
+# Server
 PORT=3000
+NODE_ENV=development
 
-📡 API Documentation
-👉 BASE URL
-https://osct-backend-1.onrender.com/api
+# GitHub OAuth
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
 
-🔐 AUTH ROUTES
-/api/auth/signup
+# URLs
+BACKEND_URL=http://localhost:3000
+FRONTEND_URL=http://localhost:5173
 
-POST
-Create a new user.
+# GitHub API
+GITHUB_TOKEN=your_github_personal_access_token
+```
 
-/api/auth/login
+### Getting Credentials
 
-POST
-Logs in a user and returns:
+**MongoDB Atlas:**
+1. Create account at [mongodb.com](https://www.mongodb.com)
+2. Create cluster and get connection string
+3. Add `MONGO_URL` to .env
+
+**GitHub OAuth:**
+1. Go to GitHub Settings → Developer settings → OAuth Apps
+2. Create new OAuth App
+3. Get Client ID and Client Secret
+4. Set Authorization callback URL to `http://localhost:3000/api/auth/github/callback`
+
+**GitHub Token:**
+1. Go to GitHub Settings → Developer settings → Personal access tokens
+2. Generate new token with `repo` scope
+3. Add to `GITHUB_TOKEN`
+
+---
+
+## 📡 API Endpoints
+
+### Authentication Routes (`/api/auth`)
+
+#### Sign Up
+```http
+POST /api/auth/signup
+Content-Type: application/json
 
 {
-  "message": "Login successful",
-  "token": "<jwt_token>",
-  "user": { ... }
+  "email": "user@example.com",
+  "password": "securePassword123"
 }
 
-🧩 CONTRIBUTION ROUTES
+Response: 201 Created
+{
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "user": {
+    "_id": "507f1f77bcf86cd799439011",
+    "email": "user@example.com"
+  }
+}
+```
 
-All these routes require:
-
-Authorization: Bearer <token>
-
-1️⃣ Create Contribution
-
-POST /api/contributions/
-Body:
+#### Login
+```http
+POST /api/auth/login
+Content-Type: application/json
 
 {
-  "title": "",
-  "repoName": "",
-  "description": "",
-  "prLink": "",
+  "email": "user@example.com",
+  "password": "securePassword123"
+}
+
+Response: 200 OK
+{
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "user": {
+    "_id": "507f1f77bcf86cd799439011",
+    "email": "user@example.com"
+  }
+}
+```
+
+#### GitHub OAuth
+```http
+GET /api/auth/github
+Redirects to GitHub authorization page
+
+GET /api/auth/github/callback?code=xxx&state=yyy
+Redirects to frontend with token
+```
+
+### Contribution Routes (`/api/contributions`)
+
+#### Create Contribution
+```http
+POST /api/contributions
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "title": "Fix typo in README",
+  "repository": "awesome-project",
+  "prLink": "https://github.com/user/repo/pull/123",
+  "description": "Fixed spelling errors in documentation",
   "status": "open",
   "difficulty": "easy"
 }
 
-2️⃣ Get All Contributions
+Response: 201 Created
+{
+  "_id": "507f1f77bcf86cd799439011",
+  "title": "Fix typo in README",
+  "repository": "awesome-project",
+  "prLink": "https://github.com/user/repo/pull/123",
+  "description": "Fixed spelling errors in documentation",
+  "status": "open",
+  "difficulty": "easy",
+  "createdBy": "507f1f77bcf86cd799439012",
+  "createdAt": "2024-01-15T10:30:00Z",
+  "updatedAt": "2024-01-15T10:30:00Z"
+}
+```
 
-GET /api/contributions/
+#### Get All Contributions
+```http
+GET /api/contributions?page=1&limit=10&search=react&status=open&difficulty=medium&sort=latest
+Authorization: Bearer <token>
 
-Query Params:
+Response: 200 OK
+{
+  "contributions": [...],
+  "totalCount": 45,
+  "page": 1,
+  "limit": 10,
+  "totalPages": 5
+}
+```
 
-page, limit, search, status, difficulty, sort
-
-3️⃣ Get Single Contribution
-
+#### Get Single Contribution
+```http
 GET /api/contributions/:id
+Authorization: Bearer <token>
 
-4️⃣ Update Contribution
+Response: 200 OK
+{
+  "_id": "507f1f77bcf86cd799439011",
+  "title": "Fix typo in README",
+  ...
+}
+```
 
+#### Update Contribution
+```http
 PUT /api/contributions/:id
+Authorization: Bearer <token>
+Content-Type: application/json
 
-5️⃣ Update Status Only
+{
+  "title": "Updated title",
+  "status": "merged",
+  "difficulty": "medium"
+}
 
+Response: 200 OK
+{
+  "_id": "507f1f77bcf86cd799439011",
+  "title": "Updated title",
+  ...
+}
+```
+
+#### Update PR Status Only
+```http
 PATCH /api/contributions/status/:id
+Authorization: Bearer <token>
+Content-Type: application/json
 
-Body:
+{
+  "status": "merged"
+}
 
-{ "status": "merged" }
+Response: 200 OK
+{
+  "_id": "507f1f77bcf86cd799439011",
+  "status": "merged",
+  ...
+}
+```
 
-6️⃣ Delete Contribution
-
+#### Delete Contribution
+```http
 DELETE /api/contributions/:id
+Authorization: Bearer <token>
+
+Response: 200 OK
+{
+  "message": "Contribution deleted successfully"
+}
+```
+
+### Query Parameters
+
+```
+GET /api/contributions?
+  page=1              # Page number (default: 1)
+  limit=10            # Items per page (default: 10)
+  search=react        # Search by title or repo
+  status=open         # Filter: open, closed, merged
+  difficulty=medium   # Filter: easy, medium, hard
+  sort=latest         # Sort: latest, oldest, titleAZ, titleZA
+```
+
+---
+
+## 📁 Project Structure
+
+```
+osct-backend/
+├── src/
+│   ├── controllers/
+│   │   ├── authController.js       # Auth logic
+│   │   ├── contributionController.js # CRUD logic
+│   │   └── github.controller.js    # GitHub API logic
+│   │
+│   ├── models/
+│   │   ├── User.js                 # User schema
+│   │   └── Contribution.js         # Contribution schema
+│   │
+│   ├── routes/
+│   │   ├── auth.routes.js          # Auth endpoints
+│   │   ├── contributions.routes.js # Contribution endpoints
+│   │   └── github.routes.js        # GitHub endpoints
+│   │
+│   ├── middlewares/
+│   │   └── authMiddleware.js       # JWT verification
+│   │
+│   ├── services/
+│   │   ├── authService.js          # Auth business logic
+│   │   └── contributionService.js  # Contribution logic
+│   │
+│   ├── utils/
+│   │   ├── generateToken.js        # JWT generation
+│   │   └── githubClient.js         # GitHub API client
+│   │
+│   ├── config/
+│   │   └── db.js                   # MongoDB connection
+│   │
+│   ├── app.js                      # Express app setup
+│   └── server.js                   # Server entry point
+│
+├── .env                            # Environment variables
+├── .env.example                    # Example env file
+├── package.json
+└── README.md
+```
+
+---
+
+## 🔐 Authentication Flow
+
+### JWT Authentication
+```
+Client Request
+    ↓
+Authorization Header: Bearer <token>
+    ↓
+authMiddleware.js verifies token
+    ↓
+Token valid? → Yes → Proceed to route
+           → No → Return 401 Unauthorized
+```
+
+### GitHub OAuth Flow
+```
+User clicks "Login with GitHub"
+    ↓
+Redirect to /api/auth/github
+    ↓
+Backend redirects to GitHub
+    ↓
+User authorizes app
+    ↓
+GitHub redirects to /api/auth/github/callback
+    ↓
+Backend exchanges code for access token
+    ↓
+Backend creates JWT
+    ↓
+Redirect to frontend with token
+    ↓
+Frontend stores token in localStorage
+```
+
+---
 
-7️⃣ GitHub Repository Search
+## 🚀 Deployment
 
-GET /api/github/repos
+### Deploy to Render
 
-Query Params:
-q (search query), language, minStars, sort, order, page, perPage
+1. **Push to GitHub**
+```bash
+git push origin main
+```
 
-Example:
-/api/github/repos?q=react&language=javascript&sort=stars
+2. **Connect to Render**
+   - Go to [render.com](https://render.com)
+   - Create new Web Service
+   - Connect GitHub repository
+   - Set environment variables in Render dashboard
 
-🧠 Backend Flow & Logic (Human-Readable)
+3. **Configure Environment Variables**
+   - Add all `.env` variables in Render dashboard
+   - Ensure `BACKEND_URL` matches Render deployment URL
+   - Ensure `FRONTEND_URL` matches frontend deployment URL
 
-Ever wondered what happens when you click "Explore Repos" on the frontend? Here is the journey of that request through our backend!
+4. **Deploy**
+   - Render auto-deploys on push to main
+   - Monitor deployment logs
 
-1.  **The Request Arrives** 📨
-    *   The frontend sends a request to `/api/github/repos` with filters like `language=python`.
+**Live URL:** https://osct-backend-1.onrender.com
 
-2.  **Controller Steps In** 👮‍♂️
-    *   The `github.controller.js` catches this request.
-    *   It grabs your query parameters (like `q`, `sort`, `page`).
-    *   **Sanitization Check:** It cleverly trims whitespace and newlines from the search query to prevent "Bad Request" errors from GitHub.
+---
 
-3.  **Authentication & Security** 🔐
-    *   The backend pulls the `GITHUB_TOKEN` from environment variables.
-    *   It properly formats the header as `Authorization: token <my-secret-token>`.
-    *   *Why?* This increases our rate limit from 10 to 5,000 requests per hour!
+## 🧪 Testing
 
-4.  **Calling the GitHub Giant** 📡
-    *   Using `axios`, we ring up the official GitHub API (`https://api.github.com/search/repositories`).
-    *   We pass along the clean query and headers.
+### Test with cURL
 
-5.  **The Response** 📦
-    *   GitHub replies with a list of repositories.
-    *   We simplify this data (keeping only name, stars, description, url, etc.) before sending it back to you.
-    *   If GitHub says "404" or "403", we handle it gracefully and tell the frontend exactly what went wrong.
+```bash
+# Sign up
+curl -X POST http://localhost:3000/api/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password123"}'
 
-Start scrolling and contributing! 🚀
+# Login
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password123"}'
 
-📄 Project Proposal (Required for Evaluation)
-Project Title:
-⭐ Open Source Contribution Tracker (OSCT)
-1. Problem Background
+# Get all contributions (replace TOKEN with actual JWT)
+curl -X GET http://localhost:3000/api/contributions \
+  -H "Authorization: Bearer TOKEN"
+```
 
-Developers contributing to open-source projects face several issues:
+### Test Credentials
 
-PRs spread across many repositories
+```
+Email: sa@mail.com
+Password: letsgo123
+```
 
-Hard to remember PR status (open/merged/closed)
+---
 
-No centralized dashboard
+## 🤝 Contributing
 
-No tracking of difficulty or repo names
+We welcome contributions! Here's how:
 
-Hard to check progress over time
+1. **Fork the repository**
+2. **Create feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Commit changes** (`git commit -m 'feat: add amazing feature'`)
+4. **Push to branch** (`git push origin feature/amazing-feature`)
+5. **Open Pull Request**
 
-This creates confusion, poor organization, and difficulty preparing portfolios or resumes.
+### Code Style
+- Use meaningful variable names
+- Add comments for complex logic
+- Follow existing patterns
+- Test before submitting PR
 
-2. Proposed Solution
+---
 
-OSCT provides a central dashboard for developers to:
+## 📄 License
 
-⭐ Track Contributions:
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
-Title
+---
 
-Repository
+## 👥 Contributors
 
-Description
+- **Sayooj SB** - Backend Developer
+  - GitHub: [@SayoojSb](https://github.com/SayoojSb)
 
-PR link
+---
 
-Status
+## 📞 Support
 
-Difficulty
+- **Issues:** [GitHub Issues](https://github.com/SayoojSb/osct-backend/issues)
+- **Frontend Repo:** [osct-frontend](https://github.com/SayoojSb/osct-frontend)
+- **Main Project:** [OSCT](https://github.com/SayoojSb/osct)
 
-⭐ Manage Contributions:
+---
 
-Add
+<div align="center">
 
-Edit
+**Made with ❤️ by developers, for developers**
 
-Delete
+[⬆ Back to Top](#-osct-backend)
 
-View single
-
-View all
-
-Update status
-
-⭐ Analyze:
-
-Search
-
-Filter
-
-Sort
-
-Pagination
-
-3. Target Users
-
-Students contributing to open source
-
-Developers with multiple PRs
-
-Hackathon participants
-
-Anyone maintaining a GitHub portfolio
-
-4. Why This Is Useful
-
-Clean contribution history
-
-Easy for interviews
-
-Encourages consistent contribution
-
-Centralized visibility of developer growth
-
-5. Tech Stack
-
-Backend:
-
-Node.js
-
-Express.js
-
-MongoDB + Mongoose
-
-JWT Authentication
-
-6. Scope
-
-Includes:
-
-Full MERN CRUD
-
-Pagination, Sorting, Filtering, Search
-
-Authentication
-
-Hosted on Render + Netlify
-
-7. Future Enhancements
-
-GitHub OAuth login
-
-Auto-fetch PRs via GitHub API
-
-Visual analytics dashboard
-
-Contribution streaks calendar
-
-## 🛠️ Tech Stack
-
-### Backend
-- Node.js
-- Express 5.1.0
-- MongoDB 7.0.0
-- Mongoose 8.20.0
-- JWT (jsonwebtoken 9.0.2)
-- Bcrypt 6.0.0
-- Axios 1.13.3
-- CORS 2.8.5
-- Express Session 1.18.2
-- Connect Mongo 6.0.0
-- Cookie Parser 1.4.7
-- Dotenv 17.2.3
-- Nodemon 3.1.11
-
-### Frontend
-- React 19.2.0
-- React Router DOM 7.9.6
-- Vite 7.2.2
-- Axios 1.13.2
-- Tailwind CSS 4.1.17
-- PostCSS 8.5.6
-- Autoprefixer 10.4.22
-- ESLint 9.39.1
-
-### Deployment
-- Render (Backend)
-- Netlify (Frontend)
-
-### Database
-- MongoDB Atlas
-
-### Version Control
-- Git
-
-🧪 How to Run Locally
-1. Clone repo
-git clone <repo-url>
-cd osct-backend
-
-2. Install dependencies
-npm install
-
-3. Configure environment
-
-Create .env.
-
-4. Start server
-npm start
-
-
-Server runs on:
-
-http://localhost:3000
-
-🎉 All Evaluation Requirements Covered
-Requirement	Status
-2 CREATE	✅
-2 READ	✅
-2 UPDATE	✅
-2 DELETE	✅
-Pagination	✅
-Filtering	✅
-Sorting	✅
-Search	✅
-Hosted Backend	✅
-README + Proposal	✅
+</div>
