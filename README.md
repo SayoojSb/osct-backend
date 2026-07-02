@@ -1,6 +1,8 @@
-# 🚀 OSCT Backend
+# Contribloom — Backend
 
-> RESTful API server for Open Source Contribution Tracker - Built with Node.js, Express, and MongoDB
+> RESTful API server for Contribloom — From confusion to contribution. A guided learning scaffold that reduces beginner confusion in open source.
+
+**Vision:** A guided learning scaffold that reduces beginner confusion in open source — providing the API backbone for structured, beginner-friendly open source onboarding.
 
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?logo=node.js)](https://nodejs.org)
 [![MongoDB](https://img.shields.io/badge/MongoDB-7.0.0-13AA52?logo=mongodb)](https://www.mongodb.com)
@@ -10,7 +12,7 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
@@ -26,9 +28,9 @@
 
 ---
 
-## 🎯 Overview
+## Overview
 
-**OSCT Backend** is the core API server that powers the Open Source Contribution Tracker application. It handles:
+**Contribloom Backend** is the core API server that powers the Contribloom application. It handles:
 
 ✅ User authentication (JWT & GitHub OAuth)  
 ✅ Contribution CRUD operations  
@@ -41,16 +43,16 @@
 
 ---
 
-## ✨ Features
+## Features
 
-### 🔐 Authentication
+### Authentication
 - **Email & Password Authentication** with JWT tokens
 - **GitHub OAuth Integration** for seamless sign-up
 - **Secure Password Hashing** with bcrypt
 - **Token-based Session Management**
 - **CORS Protection** for cross-origin requests
 
-### 📊 Contribution Management
+### Contribution Management
 - **Create** new contributions with full details
 - **Read** all contributions with pagination
 - **Update** contribution information
@@ -58,7 +60,7 @@
 - **Delete** contributions with ownership verification
 - **Ownership Security** - Only creators can modify their contributions
 
-### 🔎 Advanced Features
+### Advanced Features
 - **Search** by title and repository name
 - **Filter** by PR status (open, closed, merged)
 - **Filter** by difficulty level (easy, medium, hard)
@@ -66,7 +68,7 @@
 - **Pagination** for efficient data loading
 - **GitHub API Integration** for repository data
 
-### 🌐 GitHub Integration
+### GitHub Integration
 - Fetch organization repositories
 - Retrieve PR information
 - Real-time status updates
@@ -74,7 +76,7 @@
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ```
 Runtime:        Node.js
@@ -91,7 +93,7 @@ Dev Tools:      Nodemon 3.1.11
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### Prerequisites
 - Node.js (v16 or higher)
@@ -121,7 +123,7 @@ npm start
 
 ---
 
-## 🔑 Environment Variables
+## Environment Variables
 
 Create a `.env` file in the root directory:
 
@@ -169,7 +171,7 @@ GITHUB_TOKEN=your_github_personal_access_token
 
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
 ### Authentication Routes (`/api/auth`)
 
@@ -345,7 +347,7 @@ GET /api/contributions?
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 osct-backend/
@@ -389,7 +391,7 @@ osct-backend/
 
 ---
 
-## 🔐 Authentication Flow
+## Authentication Flow
 
 ### JWT Authentication
 ```
@@ -426,7 +428,7 @@ Frontend stores token in localStorage
 
 ---
 
-## 🚀 Deployment
+## Deployment
 
 ### Deploy to Render
 
@@ -454,7 +456,7 @@ git push origin main
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Test with cURL
 
@@ -483,7 +485,7 @@ Password: letsgo123
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Here's how:
 
@@ -501,24 +503,24 @@ We welcome contributions! Here's how:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 👥 Contributors
+## Contributors
 
 - **Sayooj SB** - Backend Developer
   - GitHub: [@SayoojSb](https://github.com/SayoojSb)
 
 ---
 
-## 📞 Support
+## Support
 
 - **Issues:** [GitHub Issues](https://github.com/SayoojSb/osct-backend/issues)
 - **Frontend Repo:** [osct-frontend](https://github.com/SayoojSb/osct-frontend)
-- **Main Project:** [OSCT](https://github.com/SayoojSb/osct)
+- **Main Project:** [Contribloom](https://github.com/SayoojSb/osct)
 
 ---
 
@@ -526,6 +528,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 **Made with ❤️ by developers, for developers**
 
-[⬆ Back to Top](#-osct-backend)
+[⬆ Back to Top](#-contribloom--backend)
 
 </div>
